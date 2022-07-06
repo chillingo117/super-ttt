@@ -56,7 +56,6 @@ class SubBoard extends React.Component {
         let style;
         if(this.props.isCurrent)
         {
-            console.log(this.props.squares);
             if(this.props.squares.every(value => value !== 0))
                 style = { border: 3, borderColor: "Blue"};
             else
@@ -191,7 +190,6 @@ export default class Game extends React.Component {
         this.loading = true;
         this.api.jumpTo(this.gameID, step)
             .then(response => {
-                console.log(response)
                 setStateFromResponse(this, response)
                 this.loading = false;
             });
@@ -201,9 +199,24 @@ export default class Game extends React.Component {
         this.loading = true;
         this.api.playGameAi(this.gameID)
             .then(response => {
-                console.log(response)
                 setStateFromResponse(this, response)
                 this.loading = false;
+            });
+    }
+
+    aiPlayToEnd(){
+        this.loading = true;
+        this.api.playGameAi(this.gameID)
+            .then(response => {
+                setStateFromResponse(this, response)
+                this.loading = false;
+                return response;
+            })
+            .then(response => {
+                if(response.winner === 0){
+                    this.loading = false;
+                    setTimeout(() => this.aiPlayToEnd(), 50);
+                }
             });
     }
 
@@ -243,6 +256,7 @@ export default class Game extends React.Component {
                             />
                             <Typography sx={style} className="status">{status}</Typography>
                             <button onClick={() => this.aiPlay()}>Make Ai Move</button>
+                            <button onClick={() => this.aiPlayToEnd()}>Play to End</button>
                             <HowToPlay/>
                         </Stack>
                         <Stack>
