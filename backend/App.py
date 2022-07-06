@@ -87,7 +87,7 @@ class App:
             passed, error = validateAiPlay(instance)
             if not passed:
                 return error
-            aiPlay = MCTS().GetPlayFromState(instance, 100)
+            aiPlay = MCTS().GetPlayFromState(instance, MCTS_TRIALS)
             instance.play(aiPlay)
             return instance.getBoard()
 
